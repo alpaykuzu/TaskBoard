@@ -1,7 +1,7 @@
 function Header() {
   return (
     <header>
-      <h1>TASK HEADER</h1>
+      <h1>GÖREV PLANLAMA PROJESİ</h1>
     </header>
   );
 }

@@ -1,9 +1,33 @@
+using Microsoft.EntityFrameworkCore;
+using TaskBoard.Application.Contracts.Persistence;
+using TaskBoard.Infrastructure.Persistence;
+using TaskBoard.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// *** BAÞLANGIÇ: CORS Politikasýný Ekle ***
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          // React uygulamasýnýn çalýþtýðý adresi buraya yazýyoruz
+                          policy.WithOrigins("http://localhost:5173")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
+builder.Services.AddDbContext<TaskBoardDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITaskCardRepository, TaskCardRepository>();
+
+// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -17,6 +41,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// *** EKLENECEK SATIR: CORS Politikasýný Uygula ***
+// Bu satýr UseAuthorization'dan ÖNCE olmalý.
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 
