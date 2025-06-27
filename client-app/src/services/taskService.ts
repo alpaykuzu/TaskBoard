@@ -1,58 +1,56 @@
-import type { Task, CreateTaskData, UpdateTaskData } from "../types/task";
+import type {
+  Task,
+  TaskList,
+  CreateTaskData,
+  CreateTaskListData,
+  UpdateTaskData,
+} from "../types/task";
 
-// .NET API'mizin temel adresi
-const API_BASE_URL = "https://localhost:7220/api";
+const API_BASE_URL = "https://localhost:7220/api"; // KENDİ PORT NUMARANI KULLAN
+
 export const taskService = {
-  getTasks: async (): Promise<Task[]> => {
+  getBoardData: async (): Promise<TaskList[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks`);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data: Task[] = await response.json();
-      console.log(data);
-      return data;
+      const response = await fetch(`${API_BASE_URL}/tasklists`); // YENİ ADRES
+      if (!response.ok) throw new Error("Pano verisi alınamadı.");
+      return await response.json();
     } catch (error) {
-      console.error("Görevleri çekerken bir hata oluştu:", error);
-      // Hata durumunda boş bir dizi döndürerek uygulamanın çökmesini engelleyebiliriz
+      console.error("Pano verisi alınırken hata:", error);
       return [];
+    }
+  },
+
+  createTaskList: async (
+    listData: CreateTaskListData
+  ): Promise<TaskList | null> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tasklists`, {
+        // YENİ ADRES
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData),
+      });
+      if (!response.ok) throw new Error("Sütun oluşturulamadı.");
+      return await response.json();
+    } catch (error) {
+      console.error("Sütun oluşturulurken hata:", error);
+      return null;
     }
   },
 
   createTask: async (taskData: CreateTaskData): Promise<Task | null> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks`, {
+      const response = await fetch(`${API_BASE_URL}/taskcards`, {
+        // YENİ ADRES
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(taskData),
       });
-
-      if (!response.ok) {
-        throw new Error("Görev oluşturulamadı.");
-      }
-
-      const newTaks: Task = await response.json();
-      return newTaks;
+      if (!response.ok) throw new Error("Kart oluşturulamadı.");
+      return await response.json();
     } catch (error) {
-      console.error("Görev oluştururken bir hata oluştu:", error);
+      console.error("Kart oluşturulurken hata:", error);
       return null;
-    }
-  },
-
-  deleteTask: async (id: number): Promise<boolean> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-        method: "DELETE",
-      });
-      // response.ok, 200-299 arası durum kodları için true döner.
-      return response.ok;
-    } catch (error) {
-      console.error("Görev silinirken bir hata oluştu:", error);
-      return false;
     }
   },
 
@@ -61,16 +59,28 @@ export const taskService = {
     taskData: UpdateTaskData
   ): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/taskcards/${id}`, {
+        // YENİ ADRES
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(taskData),
       });
       return response.ok;
     } catch (error) {
-      console.error("Görev güncellenirken bir hata oluştu:", error);
+      console.error("Kart güncellenirken hata:", error);
+      return false;
+    }
+  },
+
+  deleteTask: async (id: number): Promise<boolean> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/taskcards/${id}`, {
+        // YENİ ADRES
+        method: "DELETE",
+      });
+      return response.ok;
+    } catch (error) {
+      console.error("Kart silinirken hata:", error);
       return false;
     }
   },

@@ -10,5 +10,6 @@ namespace TaskBoard.Infrastructure.Persistence
         }
 
         public DbSet<TaskCard> TaskCards { get; set; } 
+        public DbSet<TaskList> TaskLists { get; set; }
     }
 }

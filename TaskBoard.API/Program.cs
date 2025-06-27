@@ -24,6 +24,7 @@ builder.Services.AddDbContext<TaskBoardDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITaskCardRepository, TaskCardRepository>();
+builder.Services.AddScoped<ITaskListRepository, TaskListRepository>();
 
 // Add services to the container.
 builder.Services.AddControllers();

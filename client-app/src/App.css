@@ -93,3 +93,71 @@ body {
 .task-actions .delete-btn:hover {
   background-color: #c82333;
 }
+
+.board {
+  display: flex;
+  gap: 20px; /* Sütunlar arası boşluk */
+  align-items: flex-start; /* Farklı uzunluktaki sütunların yukarıdan hizalanmasını sağlar */
+  padding: 20px;
+  overflow-x: auto; /* Sütunlar ekrana sığmazsa yatay scroll çıkar */
+}
+
+/* Her bir görev sütunu */
+.task-list {
+  background-color: #ebecf0;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 280px; /* Sütun minimum genişliği */
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Sütun içindeki kartlar arası boşluk */
+}
+
+.task-list h2 {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+  padding: 0 5px;
+  color: #172b4d;
+}
+
+.add-list-form {
+  background-color: #ffffff3d;
+}
+
+.add-list-form:hover {
+  background-color: #ffffff52;
+}
+
+.add-list-input {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.add-list-input:focus {
+  outline: none;
+  border-color: #0079bf;
+}
+.add-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.add-card-form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.add-card-form-actions .cancel-btn {
+  background: none;
+  border: none;
+  color: #6b778c;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+}

@@ -1,71 +1,79 @@
-// src/App.tsx
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import TaskCard from "./components/TaskCard";
-import AddTaskForm from "./components/AddTaskForm";
-import type { Task, UpdateTaskData } from "./types/task";
+import TaskList from "./components/TaskList";
+import AddListForm from "./components/AddListForm";
+import type { TaskList as TaskListType, Task } from "./types/task";
 import { taskService } from "./services/taskService";
 import "./App.css";
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskLists, setTaskLists] = useState<TaskListType[]>([]);
 
-  // Görevleri çeken bir fonksiyon tanımlayalım ki tekrar tekrar kullanabilelim
-  const fetchAndSetTasks = () => {
-    taskService.getTasks().then((data) => {
-      setTasks(data);
-    });
+  const fetchBoardData = () => {
+    taskService.getBoardData().then(setTaskLists);
   };
 
   useEffect(() => {
-    fetchAndSetTasks(); // Bileşen ilk yüklendiğinde görevleri çek
+    fetchBoardData();
   }, []);
 
-  // Form bileşeninden gelen "görev eklendi" haberini yakalayan fonksiyon
-  const handleTaskAdded = () => {
-    // Yeni görev eklendikten sonra listeyi tazelemek için görevleri yeniden çekiyoruz.
-    fetchAndSetTasks();
+  const handleListAdded = (newList: TaskListType) => {
+    setTaskLists((currentLists) => [...currentLists, newList]);
   };
 
-  const handleDeleteTask = async (id: number) => {
-    const success = await taskService.deleteTask(id);
-    if (success) {
-      // API'den listeyi tekrar çekmek yerine, state'i manuel olarak güncellemek
-      // daha verimli ve hızlı bir kullanıcı deneyimi sunar.
-      setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
-    } else {
-      alert("Görev silinemedi. Lütfen tekrar deneyin.");
-    }
+  const handleCardAdded = (newTask: Task, listId: number) => {
+    setTaskLists((currentLists) =>
+      currentLists.map((list) =>
+        list.id === listId
+          ? { ...list, taskCards: [...list.taskCards, newTask] }
+          : list
+      )
+    );
   };
 
-  const handleUpdateTask = async (id: number, updateData: UpdateTaskData) => {
-    const success = await taskService.updateTask(id, updateData);
-    if (success) {
-      // Listeyi yeniden çekmek yerine, sadece güncellenen elemanı state'te değiştir. Daha verimli!
-      setTasks((currentTasks) =>
-        currentTasks.map((task) =>
-          task.id === id ? { ...task, ...updateData } : task
-        )
-      );
-    } else {
-      alert("Görev güncellenemedi.");
-    }
+  const handleTaskDeleted = (taskId: number, listId: number) => {
+    setTaskLists((currentLists) =>
+      currentLists.map((list) =>
+        list.id === listId
+          ? {
+              ...list,
+              taskCards: list.taskCards.filter((card) => card.id !== taskId),
+            }
+          : list
+      )
+    );
+  };
+
+  const handleTaskUpdated = (updatedTask: Task, listId: number) => {
+    setTaskLists((currentLists) =>
+      currentLists.map((list) =>
+        list.id === listId
+          ? {
+              ...list,
+              taskCards: list.taskCards.map((card) =>
+                card.id === updatedTask.id ? updatedTask : card
+              ),
+            }
+          : list
+      )
+    );
   };
 
   return (
     <div>
       <Header />
-      <main className="board-container">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onDelete={handleDeleteTask}
-            onUpdate={handleUpdateTask} // Update prop'unu bağlıyoruz
+      <main className="board">
+        {taskLists.map((list) => (
+          <TaskList
+            key={list.id}
+            list={list}
+            onCardAdded={handleCardAdded}
+            onTaskDeleted={handleTaskDeleted}
+            onTaskUpdated={handleTaskUpdated}
           />
         ))}
+        <AddListForm onListAdded={handleListAdded} />
       </main>
-      <AddTaskForm onTaskAdded={handleTaskAdded} />
     </div>
   );
 }
