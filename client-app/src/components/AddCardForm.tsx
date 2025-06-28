@@ -1,43 +1,45 @@
 import { useState } from "react";
 import type { Task, CreateTaskData } from "../types/task";
-import { taskService } from "../services/taskService";
+import { cardService } from "../services/cardService";
 
+// 1. DÜZELTME: Props tip tanımına 'taskListId' eklendi.
 type AddCardFormProps = {
-  taskListId: number;
-  onCardAdded: (newTask: Task, taskListId: number) => void;
+  listId: number; // Daha tutarlı olması için adını 'listId' yapalım
+  onCardAdded: (newTask: Task, listId: number) => void;
 };
 
-function AddCardForm({ taskListId, onCardAdded }: AddCardFormProps) {
-  // Düzenleme modunun açık olup olmadığını tutan state
+// Props'tan 'listId' olarak alıyoruz.
+function AddCardForm({ listId, onCardAdded }: AddCardFormProps) {
   const [isEditing, setIsEditing] = useState(false);
-
-  // Form inputları için state'ler
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!title.trim()) {
-      setIsEditing(false); // Başlık boşsa formu kapat
+      setIsEditing(false);
       return;
     }
 
-    // API'ye gönderilecek veri hem başlığı hem de açıklamayı içeriyor
-    const cardData: CreateTaskData = { title, description, taskListId };
-    const newTask = await taskService.createTask(cardData);
+    // 2. DÜZELTME: 'cardData' objesini oluştururken backend'in beklediği
+    // 'taskListId' alanına, props'tan gelen 'listId' değerini atıyoruz.
+    const cardData: CreateTaskData = { title, description, taskListId: listId };
 
-    if (newTask) {
-      // App.tsx'e haber vererek state'in güncellenmesini sağlıyoruz
-      onCardAdded(newTask, taskListId);
+    try {
+      const newTask = await cardService.createCard(cardData);
+      if (newTask) {
+        onCardAdded(newTask, listId);
+      }
+    } catch (error) {
+      console.error("Kart oluşturulamadı:", error);
+      alert("Kart oluşturulurken bir hata oluştu.");
     }
 
-    // Formu sıfırla ve düzenleme modundan çık
     setTitle("");
     setDescription("");
     setIsEditing(false);
   };
 
-  // Eğer düzenleme modunda değilsek, sadece butonu göster
   if (!isEditing) {
     return (
       <button className="add-card-btn" onClick={() => setIsEditing(true)}>
@@ -46,10 +48,8 @@ function AddCardForm({ taskListId, onCardAdded }: AddCardFormProps) {
     );
   }
 
-  // Eğer düzenleme modundaysak, tam formu göster
   return (
     <form onSubmit={handleSubmit} className="add-card-form">
-      {/* Kart Başlığı için alan */}
       <textarea
         className="add-card-textarea"
         placeholder="Bu kart için bir başlık girin..."
@@ -57,7 +57,6 @@ function AddCardForm({ taskListId, onCardAdded }: AddCardFormProps) {
         onChange={(e) => setTitle(e.target.value)}
         autoFocus
       />
-      {/* Kart Açıklaması için YENİ alan */}
       <textarea
         className="add-card-textarea"
         placeholder="Açıklama ekleyin (isteğe bağlı)..."

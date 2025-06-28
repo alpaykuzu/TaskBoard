@@ -14,5 +14,7 @@ namespace TaskBoard.Domain.Entities
         public string Title { get; set; }
         public int Order { get; set; } 
         public ICollection<TaskCard> TaskCards { get; set; } = new List<TaskCard>();
+        public int BoardId { get; set; }
+        public Board Board { get; set; }
     }
 }

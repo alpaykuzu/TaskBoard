@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { taskService } from "../services/taskService";
-import type { TaskList, CreateTaskListData } from "../types/task";
+import { boardService } from "../services/boardService";
+import type { CreateTaskListData, TaskList } from "../types/board";
 
+// 1. ADIM: Props tip tanımına boardId eklendi.
 type AddListFormProps = {
+  boardId: number;
   onListAdded: (newList: TaskList) => void;
 };
 
-function AddListForm({ onListAdded }: AddListFormProps) {
+function AddListForm({ boardId, onListAdded }: AddListFormProps) {
   const [title, setTitle] = useState("");
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -15,11 +17,19 @@ function AddListForm({ onListAdded }: AddListFormProps) {
       alert("Sütun başlığı boş olamaz!");
       return;
     }
+
     const listData: CreateTaskListData = { title };
-    const newList = await taskService.createTaskList(listData);
-    if (newList) {
-      onListAdded(newList);
-      setTitle("");
+
+    try {
+      // 2. ADIM: Servis fonksiyonu artık doğru boardId ile çağrılıyor.
+      const newList = await boardService.createTaskList(boardId, listData);
+      if (newList) {
+        onListAdded(newList);
+        setTitle("");
+      }
+    } catch (error) {
+      console.error("Sütun oluşturulamadı:", error);
+      alert("Sütun oluşturulurken bir hata oluştu.");
     }
   };
 

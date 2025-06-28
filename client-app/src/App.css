@@ -1,105 +1,214 @@
+/* ==========================================================================
+   GENEL STİLLER & SAYFA YAPISI
+   ========================================================================== */
+
 body {
-  background-color: #f0f2f5;
+  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  margin: 0;
-  padding: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5;
+  color: #172b4d;
 }
 
-.board-container {
+.loading-screen {
   display: flex;
-  gap: 20px; /* Kartlar arası boşluk */
   justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #5e6c84;
 }
 
-.task-card {
+/* ==========================================================================
+   GİRİŞ & KAYIT SAYFALARI
+   ========================================================================== */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-form {
+  padding: 40px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  padding: 16px;
-  width: 250px;
-}
-
-.task-card h3 {
-  margin-top: 0;
-}
-
-.task-card.done {
-  background-color: #e8f5e9; /* Yeşilimsi bir arka plan */
-  text-decoration: line-through; /* Üstü çizili metin */
-  opacity: 0.7;
-}
-
-.add-task-form {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  margin-top: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 15px;
 }
 
-.add-task-form h3 {
+.auth-form h2 {
+  text-align: center;
   margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.auth-form input {
+  padding: 12px;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.auth-form button {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0052cc;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-form button:hover {
+  background-color: #0065ff;
+}
+
+.auth-form .link-button {
+  background: none;
+  color: #0052cc;
+  text-align: center;
+  padding: 0;
+  font-weight: normal;
+}
+
+.auth-form .error-message,
+.auth-form .success-message {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
   text-align: center;
 }
 
-.add-task-form input,
-.add-task-form textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box; /* Bu önemli */
+.auth-form .error-message {
+  color: #de350b;
+  background-color: #ffebe6;
 }
 
-.add-task-form button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #28a745;
-  color: white;
+.auth-form .success-message {
+  color: #006644;
+  background-color: #e3fcef;
+}
+
+/* ==========================================================================
+   PANO LİSTESİ SAYFASI
+   ========================================================================== */
+
+.boards-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.boards-list-main {
+  padding: 40px;
+  flex-grow: 1;
+}
+
+.boards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.board-tile {
+  background-color: white;
+  height: 100px;
+  border-radius: 8px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #172b4d;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.board-tile:hover {
+  background-color: #e9efff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-board-tile form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 80%;
+  padding: 10px;
+}
+
+.add-board-tile input {
+  width: 100%;
+  padding: 8px;
   border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.add-board-tile button {
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  background-color: #0079bf;
+  color: white;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   PANO DETAY SAYFASI & BİLEŞENLER
+   ========================================================================== */
+
+.board-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.board-header {
+  padding: 10px 20px;
+  background-color: #0065ff;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.board-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.logout-button,
+.back-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
   cursor: pointer;
   font-size: 16px;
 }
 
-.add-task-form button:hover {
-  background-color: #218838;
-}
-
-/* App.css'in en altına ekle */
-.task-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
-}
-.task-actions button {
-  flex-grow: 1; /* Butonların alanı kaplamasını sağlar */
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.task-actions .delete-btn {
-  background-color: #dc3545;
-  color: white;
-}
-.task-actions .delete-btn:hover {
-  background-color: #c82333;
-}
-
+/* Pano ana gövdesi (sütunları içeren) */
 .board {
   display: flex;
-  gap: 20px; /* Sütunlar arası boşluk */
-  align-items: flex-start; /* Farklı uzunluktaki sütunların yukarıdan hizalanmasını sağlar */
+  gap: 10px;
+  align-items: flex-start;
   padding: 20px;
-  overflow-x: auto; /* Sütunlar ekrana sığmazsa yatay scroll çıkar */
+  overflow-x: auto;
+  flex-grow: 1;
 }
 
 /* Her bir görev sütunu */
@@ -107,24 +216,87 @@ body {
   background-color: #ebecf0;
   border-radius: 8px;
   padding: 10px;
-  min-width: 280px; /* Sütun minimum genişliği */
+  min-width: 280px;
   max-width: 280px;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Sütun içindeki kartlar arası boşluk */
+  gap: 10px;
 }
 
 .task-list h2 {
   font-size: 16px;
-  margin: 0 0 10px 0;
-  padding: 0 5px;
+  margin: 0;
+  padding: 5px;
   color: #172b4d;
 }
 
-.add-list-form {
-  background-color: #ffffff3d;
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 20px; /* Boşken bile bırakılabilir alan olması için */
 }
 
+/* Her bir görev kartı */
+.task-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  cursor: grab;
+}
+
+.task-card:active {
+  cursor: grabbing;
+}
+
+.task-card h3 {
+  margin-top: 0;
+  font-size: 14px;
+}
+.task-card p {
+  font-size: 12px;
+  color: #5e6c84;
+}
+
+/* Kart içindeki Düzenle/Sil butonları */
+.task-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+.task-actions button {
+  flex-grow: 1;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #f4f5f7;
+}
+.task-actions .delete-btn {
+  background-color: #ffebe6;
+  color: #de350b;
+}
+
+/* Kart Düzenleme Formu */
+.task-card .edit-input,
+.task-card .edit-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #0079bf;
+  border-radius: 3px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+/* ==========================================================================
+   FORM EKLEME (Sütun ve Kart)
+   ========================================================================== */
+
+.add-list-form {
+  background-color: #ffffff3d;
+  transition: background-color 0.2s;
+}
 .add-list-form:hover {
   background-color: #ffffff52;
 }
@@ -137,27 +309,58 @@ body {
   background-color: white;
   box-sizing: border-box;
 }
-
 .add-list-input:focus {
   outline: none;
   border-color: #0079bf;
 }
+
+.add-card-btn {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  text-align: left;
+  color: #5e6c84;
+  cursor: pointer;
+}
+.add-card-btn:hover {
+  background-color: #091e4214;
+}
+
 .add-card-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+.add-card-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+}
+
 .add-card-form-actions {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-
+.add-card-form-actions button[type="submit"] {
+  background-color: #0079bf;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
 .add-card-form-actions .cancel-btn {
   background: none;
   border: none;
   color: #6b778c;
   cursor: pointer;
   font-size: 20px;
-  padding: 0;
+  padding: 0 4px;
 }

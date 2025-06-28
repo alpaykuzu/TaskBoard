@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Task, UpdateTaskData } from "../types/task";
-import { taskService } from "../services/taskService";
+import { cardService } from "../services/cardService";
 
 type TaskCardProps = {
   task: Task;
@@ -27,7 +27,7 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1, // Sürüklenirken orijinal kartı yarım opak yapalım
+    opacity: isDragging ? 0.5 : 1,
   };
 
   const handleDelete = async () => {
@@ -36,7 +36,7 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
         `'${task.title}' görevini silmek istediğinizden emin misiniz?`
       )
     ) {
-      const success = await taskService.deleteTask(task.id);
+      const success = await cardService.deleteCard(task.id);
       if (success) {
         onDelete();
       } else {
@@ -45,10 +45,14 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
     }
   };
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
   const handleUpdateSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const updateData = { title: editTitle, description: editDescription };
-    const success = await taskService.updateTask(task.id, updateData);
+    const success = await cardService.updateCard(task.id, updateData);
     if (success) {
       onUpdate(updateData);
       setIsEditing(false);
@@ -58,9 +62,10 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
   };
 
   if (isEditing) {
+    // Düzenleme modunda sürükleme dinleyicileri (listeners) pasif olmalı
+    // Bu yüzden bu div'e {...listeners} prop'unu eklemiyoruz.
     return (
-      // Düzenleme modu sürüklenemez
-      <div className="task-card">
+      <div ref={setNodeRef} {...attributes} className="task-card">
         <form onSubmit={handleUpdateSubmit}>
           <input
             type="text"
@@ -97,8 +102,17 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
       <h3>{task.title}</h3>
       <p>{task.description}</p>
       <div className="task-actions">
-        <button onClick={() => setIsEditing(true)}>Düzenle</button>
-        <button className="delete-btn" onClick={handleDelete}>
+        <button
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={handleEditClick}
+        >
+          Düzenle
+        </button>
+        <button
+          className="delete-btn"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={handleDelete}
+        >
           Sil
         </button>
       </div>

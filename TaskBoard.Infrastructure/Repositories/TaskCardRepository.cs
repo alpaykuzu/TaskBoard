@@ -24,7 +24,13 @@ namespace TaskBoard.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return taskCard;
         }
-
+        public async Task<TaskCard> GetByIdWithParentAsync(int id)
+        {
+            // TaskCard'ı getirirken, ona bağlı olan TaskList nesnesini de getirmesini söylüyoruz.
+            return await _context.TaskCards
+                                 .Include(c => c.TaskList)
+                                 .FirstOrDefaultAsync(c => c.Id == id);
+        }
         public async Task DeleteAsync(TaskCard taskCard)
         {
             _context.TaskCards.Remove(taskCard);
