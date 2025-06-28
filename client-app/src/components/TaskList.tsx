@@ -1,6 +1,11 @@
 import type { TaskList as TaskListType, Task } from "../types/task";
 import TaskCard from "./TaskCard";
 import AddCardForm from "./AddCardForm";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 type TaskListProps = {
   list: TaskListType;
@@ -15,21 +20,28 @@ function TaskList({
   onTaskDeleted,
   onTaskUpdated,
 }: TaskListProps) {
+  const { setNodeRef } = useDroppable({ id: list.id });
+
   return (
-    <div className="task-list">
+    <div ref={setNodeRef} className="task-list">
       <h2>{list.title}</h2>
-      <div className="cards-container">
-        {list.taskCards.map((card) => (
-          <TaskCard
-            key={card.id}
-            task={card}
-            onDelete={() => onTaskDeleted(card.id, list.id)}
-            onUpdate={(updateData) =>
-              onTaskUpdated({ ...card, ...updateData }, list.id)
-            }
-          />
-        ))}
-      </div>
+      <SortableContext
+        items={list.taskCards.map((c) => c.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="cards-container">
+          {list.taskCards.map((card) => (
+            <TaskCard
+              key={card.id}
+              task={card}
+              onDelete={() => onTaskDeleted(card.id, list.id)}
+              onUpdate={(updateData) =>
+                onTaskUpdated({ ...card, ...updateData }, list.id)
+              }
+            />
+          ))}
+        </div>
+      </SortableContext>
       <AddCardForm taskListId={list.id} onCardAdded={onCardAdded} />
     </div>
   );

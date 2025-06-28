@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { Task, UpdateTaskData } from "../types/task";
 import { taskService } from "../services/taskService";
 
@@ -12,6 +14,21 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1, // Sürüklenirken orijinal kartı yarım opak yapalım
+  };
 
   const handleDelete = async () => {
     if (
@@ -42,30 +59,41 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
 
   if (isEditing) {
     return (
-      <form onSubmit={handleUpdateSubmit} className="task-card">
-        <input
-          type="text"
-          value={editTitle}
-          onChange={(e) => setEditTitle(e.target.value)}
-          className="edit-input"
-        />
-        <textarea
-          value={editDescription}
-          onChange={(e) => setEditDescription(e.target.value)}
-          className="edit-textarea"
-        />
-        <div className="task-actions">
-          <button type="submit">Kaydet</button>
-          <button type="button" onClick={() => setIsEditing(false)}>
-            İptal
-          </button>
-        </div>
-      </form>
+      // Düzenleme modu sürüklenemez
+      <div className="task-card">
+        <form onSubmit={handleUpdateSubmit}>
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            className="edit-input"
+            autoFocus
+          />
+          <textarea
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+            className="edit-textarea"
+            rows={4}
+          />
+          <div className="task-actions">
+            <button type="submit">Kaydet</button>
+            <button type="button" onClick={() => setIsEditing(false)}>
+              İptal
+            </button>
+          </div>
+        </form>
+      </div>
     );
   }
 
   return (
-    <div className="task-card">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="task-card"
+    >
       <h3>{task.title}</h3>
       <p>{task.description}</p>
       <div className="task-actions">

@@ -84,4 +84,19 @@ export const taskService = {
       return false;
     }
   },
+
+  moveTask: async (cardId: number, newListId: number): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/taskcards/${cardId}/move/${newListId}`,
+        {
+          method: "PUT",
+        }
+      );
+      return response.ok;
+    } catch (error) {
+      console.error("Kart taşınırken hata:", error);
+      return false;
+    }
+  },
 };

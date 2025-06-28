@@ -1,5 +1,3 @@
-// src/components/AddCardForm.tsx
-
 import { useState } from "react";
 import type { Task, CreateTaskData } from "../types/task";
 import { taskService } from "../services/taskService";

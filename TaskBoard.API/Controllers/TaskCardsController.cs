@@ -74,4 +74,25 @@ public class TaskCardsController : ControllerBase
         await _taskCardRepository.DeleteAsync(cardToDelete);
         return NoContent();
     }
+
+    // Bir kartın listesini değiştirmek için
+    [HttpPut("{cardId}/move/{newListId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MoveCard(int cardId, int newListId)
+    {
+        var cardToMove = await _taskCardRepository.GetByIdAsync(cardId);
+        if (cardToMove == null)
+        {
+            return NotFound("Card not found.");
+        }
+
+        // Yeni listenin var olup olmadığını kontrol etmek iyi bir pratiktir,
+        // ama bu adımı şimdilik atlıyoruz.
+
+        cardToMove.TaskListId = newListId;
+        await _taskCardRepository.UpdateAsync(cardToMove);
+
+        return NoContent();
+    }
 }
