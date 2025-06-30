@@ -1,20 +1,15 @@
-import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Task, UpdateTaskData } from "../types/task";
+import type { Task } from "../types/task";
 import { cardService } from "../services/cardService";
 
 type TaskCardProps = {
   task: Task;
   onDelete: () => void;
-  onUpdate: (data: UpdateTaskData) => void;
+  onEdit: () => void;
 };
 
-function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(task.title);
-  const [editDescription, setEditDescription] = useState(task.description);
-
+function TaskCard({ task, onDelete, onEdit }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -27,69 +22,63 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1,
   };
 
-  const handleDelete = async () => {
+  // Zaman barını doğru hesaplayan tam fonksiyon
+  const renderTimeBar = () => {
+    if (!task.dueDate || !task.createdAt) return null;
+    const start = new Date(task.createdAt).getTime();
+    const end = new Date(task.dueDate).getTime();
+    const now = new Date().getTime();
+    if (end <= start) return null;
+
+    const totalDuration = end - start;
+    const elapsedDuration = now - start;
+    let progress = (elapsedDuration / totalDuration) * 100;
+    progress = Math.max(0, Math.min(100, progress));
+
+    let barColor = "#4caf50";
+    if (progress > 50) barColor = "#ff9800";
+    if (progress > 85) barColor = "#f44336";
+    if (now > end) barColor = "#607d8b";
+
+    return (
+      <div
+        className="time-bar-container"
+        title={`Tamamlanma yüzdesi: %${Math.round(progress)}`}
+      >
+        <div
+          className="time-bar-progress"
+          style={{ width: `${progress}%`, backgroundColor: barColor }}
+        />
+      </div>
+    );
+  };
+
+  // "Düzenle" butonuna basıldığında üst bileşeni bilgilendirir.
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit();
+  };
+
+  // "Sil" butonuna basıldığında API'ye istek gönderir ve üst bileşeni bilgilendirir.
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (
       window.confirm(
         `'${task.title}' görevini silmek istediğinizden emin misiniz?`
       )
     ) {
-      const success = await cardService.deleteCard(task.id);
-      if (success) {
-        onDelete();
-      } else {
-        alert("Görev silinemedi.");
-      }
+      cardService.deleteCard(task.id).then((success) => {
+        if (success) {
+          onDelete();
+        } else {
+          alert("Görev silinemedi.");
+        }
+      });
     }
   };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleUpdateSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const updateData = { title: editTitle, description: editDescription };
-    const success = await cardService.updateCard(task.id, updateData);
-    if (success) {
-      onUpdate(updateData);
-      setIsEditing(false);
-    } else {
-      alert("Görev güncellenemedi.");
-    }
-  };
-
-  if (isEditing) {
-    // Düzenleme modunda sürükleme dinleyicileri (listeners) pasif olmalı
-    // Bu yüzden bu div'e {...listeners} prop'unu eklemiyoruz.
-    return (
-      <div ref={setNodeRef} {...attributes} className="task-card">
-        <form onSubmit={handleUpdateSubmit}>
-          <input
-            type="text"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            className="edit-input"
-            autoFocus
-          />
-          <textarea
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-            className="edit-textarea"
-            rows={4}
-          />
-          <div className="task-actions">
-            <button type="submit">Kaydet</button>
-            <button type="button" onClick={() => setIsEditing(false)}>
-              İptal
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -99,8 +88,36 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
       {...listeners}
       className="task-card"
     >
+      {renderTimeBar()}
+
+      {task.labels && task.labels.length > 0 && (
+        <div className="card-labels-container">
+          {task.labels.map((label) => (
+            <span
+              key={label.id}
+              // --- ANA DÜZELTME ---
+              // Artık her yerde kullanılan, esnek ve doğru stili uyguluyoruz.
+              className="card-label"
+              style={{ backgroundColor: label.color }}
+            >
+              {label.title}
+            </span>
+          ))}
+        </div>
+      )}
+
       <h3>{task.title}</h3>
-      <p>{task.description}</p>
+      {task.dueDate && (
+        <p className="due-date">
+          Bitiş:{" "}
+          {new Date(task.dueDate).toLocaleDateString("tr-TR", {
+            day: "2-digit",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
+      )}
       <div className="task-actions">
         <button
           onPointerDown={(e) => e.stopPropagation()}
@@ -111,7 +128,7 @@ function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
         <button
           className="delete-btn"
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
         >
           Sil
         </button>

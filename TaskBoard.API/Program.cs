@@ -56,6 +56,8 @@ builder.Services.AddDbContext<TaskBoardDbContext>(options =>
 builder.Services.AddScoped<ITaskCardRepository, TaskCardRepository>();
 builder.Services.AddScoped<ITaskListRepository, TaskListRepository>();
 builder.Services.AddScoped<IBoardRepository, BoardRepository>();
+builder.Services.AddScoped<ILabelRepository, LabelRepository>();
+
 
 // Add services to the container.
 builder.Services.AddControllers();

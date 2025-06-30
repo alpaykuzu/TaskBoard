@@ -20,5 +20,14 @@ namespace TaskBoard.Domain.Entities
 
         // Navigation Property: Bu kartın ait olduğu TaskList nesnesine kod içinden erişim sağlar.
         public TaskList TaskList { get; set; }
+
+        // Kartın ne zaman oluşturulduğunu tutar.
+        public DateTime CreatedAt { get; set; }
+
+        // Kartın son teslim tarihini tutar. Null olabilir, çünkü her görevin bitiş tarihi olmak zorunda değil.
+        public DateTime? DueDate { get; set; }
+
+        // Navigation Property: Bir kartın sahip olduğu tüm etiketler.
+        public ICollection<Label> Labels { get; set; } = new List<Label>();
     }
 }

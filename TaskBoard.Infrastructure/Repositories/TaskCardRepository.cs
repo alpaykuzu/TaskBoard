@@ -31,6 +31,14 @@ namespace TaskBoard.Infrastructure.Repositories
                                  .Include(c => c.TaskList)
                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
+        public async Task<TaskCard> GetByIdWithLabelsAsync(int id)
+        {
+            // Kartı getirirken, ilişkili etiketlerini de getirmesini sağlıyoruz.
+            return await _context.TaskCards
+                                 .Include(c => c.Labels)
+                                 .Include(c => c.TaskList) // Güvenlik kontrolü için bu da lazım olabilir.
+                                 .FirstOrDefaultAsync(c => c.Id == id);
+        }
         public async Task DeleteAsync(TaskCard taskCard)
         {
             _context.TaskCards.Remove(taskCard);

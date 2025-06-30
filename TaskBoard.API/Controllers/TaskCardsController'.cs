@@ -50,7 +50,9 @@ namespace TaskBoard.API.Controllers
             {
                 Title = createDto.Title,
                 Description = createDto.Description,
-                TaskListId = createDto.TaskListId
+                TaskListId = createDto.TaskListId,
+                DueDate = createDto.DueDate, // Yeni alanı ekledik
+                CreatedAt = DateTime.UtcNow // Oluşturulma zamanını sunucu saatiyle anında atıyoruz
             };
 
             var newCard = await _taskCardRepository.AddAsync(cardEntity);
@@ -59,7 +61,9 @@ namespace TaskBoard.API.Controllers
             {
                 Id = newCard.Id,
                 Title = newCard.Title,
-                Description = newCard.Description
+                Description = newCard.Description,
+                CreatedAt = newCard.CreatedAt,
+                DueDate = newCard.DueDate
             };
             return Ok(cardToReturn);
         }
@@ -78,7 +82,10 @@ namespace TaskBoard.API.Controllers
 
             cardToUpdate.Title = updateDto.Title;
             cardToUpdate.Description = updateDto.Description;
+            cardToUpdate.DueDate = updateDto.DueDate; // Yeni alanı ekledik
+
             await _taskCardRepository.UpdateAsync(cardToUpdate);
+
             return NoContent();
         }
 

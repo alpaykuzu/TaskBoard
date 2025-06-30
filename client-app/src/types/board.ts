@@ -1,3 +1,4 @@
+import type { LabelDto } from "./label";
 import type { Task } from "./task";
 // Task tipini bu dosyadan da erişilebilir kılmak için yeniden ihraç ediyoruz.
 export type { Task };
@@ -19,6 +20,7 @@ export interface TaskList {
 // Bir panonun tüm detaylarını (kendisi + sütunları) temsil eder.
 export interface BoardDetails extends Board {
   taskLists: TaskList[];
+  labels: LabelDto[];
 }
 
 // Yeni pano oluşturma DTO'su.

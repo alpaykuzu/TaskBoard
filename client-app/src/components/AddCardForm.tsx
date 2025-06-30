@@ -1,18 +1,23 @@
 import { useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { tr } from "date-fns/locale";
+
 import type { Task, CreateTaskData } from "../types/task";
 import { cardService } from "../services/cardService";
 
-// 1. DÜZELTME: Props tip tanımına 'taskListId' eklendi.
+registerLocale("tr", tr);
+
 type AddCardFormProps = {
-  listId: number; // Daha tutarlı olması için adını 'listId' yapalım
+  listId: number;
   onCardAdded: (newTask: Task, listId: number) => void;
 };
 
-// Props'tan 'listId' olarak alıyoruz.
 function AddCardForm({ listId, onCardAdded }: AddCardFormProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState<Date | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -20,24 +25,28 @@ function AddCardForm({ listId, onCardAdded }: AddCardFormProps) {
       setIsEditing(false);
       return;
     }
-
-    // 2. DÜZELTME: 'cardData' objesini oluştururken backend'in beklediği
-    // 'taskListId' alanına, props'tan gelen 'listId' değerini atıyoruz.
-    const cardData: CreateTaskData = { title, description, taskListId: listId };
-
+    const cardData: CreateTaskData = {
+      title,
+      description,
+      taskListId: listId,
+      dueDate: dueDate ? dueDate.toISOString() : null,
+    };
     try {
       const newTask = await cardService.createCard(cardData);
-      if (newTask) {
-        onCardAdded(newTask, listId);
-      }
+      if (newTask) onCardAdded(newTask, listId);
     } catch (error) {
       console.error("Kart oluşturulamadı:", error);
-      alert("Kart oluşturulurken bir hata oluştu.");
     }
-
     setTitle("");
     setDescription("");
+    setDueDate(null);
     setIsEditing(false);
+  };
+
+  const filterPassedTimes = (time: Date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+    return currentDate.getTime() < selectedDate.getTime();
   };
 
   if (!isEditing) {
@@ -64,6 +73,20 @@ function AddCardForm({ listId, onCardAdded }: AddCardFormProps) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+      <div className="form-date-input-container">
+        <DatePicker
+          locale="tr"
+          selected={dueDate}
+          onChange={(date: Date | null) => setDueDate(date)}
+          showTimeSelect
+          minDate={new Date()}
+          filterTime={filterPassedTimes}
+          dateFormat="d MMMM yyyy, HH:mm"
+          className="date-picker-input"
+          placeholderText="Bitiş tarihi ekle..."
+          isClearable
+        />
+      </div>
       <div className="add-card-form-actions">
         <button type="submit">Kart Ekle</button>
         <button

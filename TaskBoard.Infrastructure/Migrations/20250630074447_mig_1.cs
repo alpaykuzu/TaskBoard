@@ -177,6 +177,27 @@ namespace TaskBoard.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Labels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Color = table.Column<string>(type: "TEXT", nullable: false),
+                    BoardId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Labels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Labels_Boards_BoardId",
+                        column: x => x.BoardId,
+                        principalTable: "Boards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TaskLists",
                 columns: table => new
                 {
@@ -205,7 +226,9 @@ namespace TaskBoard.Infrastructure.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
-                    TaskListId = table.Column<int>(type: "INTEGER", nullable: false)
+                    TaskListId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -214,6 +237,30 @@ namespace TaskBoard.Infrastructure.Migrations
                         name: "FK_TaskCards_TaskLists_TaskListId",
                         column: x => x.TaskListId,
                         principalTable: "TaskLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LabelTaskCard",
+                columns: table => new
+                {
+                    LabelsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TaskCardsId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabelTaskCard", x => new { x.LabelsId, x.TaskCardsId });
+                    table.ForeignKey(
+                        name: "FK_LabelTaskCard_Labels_LabelsId",
+                        column: x => x.LabelsId,
+                        principalTable: "Labels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LabelTaskCard_TaskCards_TaskCardsId",
+                        column: x => x.TaskCardsId,
+                        principalTable: "TaskCards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -261,6 +308,16 @@ namespace TaskBoard.Infrastructure.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Labels_BoardId",
+                table: "Labels",
+                column: "BoardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabelTaskCard_TaskCardsId",
+                table: "LabelTaskCard",
+                column: "TaskCardsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TaskCards_TaskListId",
                 table: "TaskCards",
                 column: "TaskListId");
@@ -290,10 +347,16 @@ namespace TaskBoard.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "TaskCards");
+                name: "LabelTaskCard");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Labels");
+
+            migrationBuilder.DropTable(
+                name: "TaskCards");
 
             migrationBuilder.DropTable(
                 name: "TaskLists");

@@ -15,6 +15,7 @@ namespace TaskBoard.Application.Features.Tasks.DTOs
         [MaxLength(500)]
         public string Description { get; set; }
         [Required]
-        public int TaskListId { get; set; } 
+        public int TaskListId { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 }

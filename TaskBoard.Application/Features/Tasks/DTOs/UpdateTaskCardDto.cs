@@ -15,5 +15,6 @@ namespace TaskBoard.Application.Features.Tasks.DTOs
 
         [MaxLength(500)]
         public string Description { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using TaskBoard.Infrastructure.Persistence;
 namespace TaskBoard.Infrastructure.Migrations
 {
     [DbContext(typeof(TaskBoardDbContext))]
-    [Migration("20250628151627_mig_1")]
+    [Migration("20250630074447_mig_1")]
     partial class mig_1
     {
         /// <inheritdoc />
@@ -19,6 +19,21 @@ namespace TaskBoard.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
+
+            modelBuilder.Entity("LabelTaskCard", b =>
+                {
+                    b.Property<int>("LabelsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TaskCardsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LabelsId", "TaskCardsId");
+
+                    b.HasIndex("TaskCardsId");
+
+                    b.ToTable("LabelTaskCard");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -233,14 +248,44 @@ namespace TaskBoard.Infrastructure.Migrations
                     b.ToTable("Boards");
                 });
 
+            modelBuilder.Entity("TaskBoard.Domain.Entities.Label", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BoardId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardId");
+
+                    b.ToTable("Labels");
+                });
+
             modelBuilder.Entity("TaskBoard.Domain.Entities.TaskCard", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DueDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TaskListId")
@@ -278,6 +323,21 @@ namespace TaskBoard.Infrastructure.Migrations
                     b.HasIndex("BoardId");
 
                     b.ToTable("TaskLists");
+                });
+
+            modelBuilder.Entity("LabelTaskCard", b =>
+                {
+                    b.HasOne("TaskBoard.Domain.Entities.Label", null)
+                        .WithMany()
+                        .HasForeignKey("LabelsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskBoard.Domain.Entities.TaskCard", null)
+                        .WithMany()
+                        .HasForeignKey("TaskCardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -340,6 +400,17 @@ namespace TaskBoard.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("TaskBoard.Domain.Entities.Label", b =>
+                {
+                    b.HasOne("TaskBoard.Domain.Entities.Board", "Board")
+                        .WithMany()
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
                 });
 
             modelBuilder.Entity("TaskBoard.Domain.Entities.TaskCard", b =>

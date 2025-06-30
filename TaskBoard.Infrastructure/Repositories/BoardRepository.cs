@@ -36,10 +36,11 @@ namespace TaskBoard.Infrastructure.Repositories
             return await _context.Boards
                                  .Include(b => b.TaskLists)
                                  .ThenInclude(tl => tl.TaskCards)
+                                    .ThenInclude(tc => tc.Labels) 
                                  .FirstOrDefaultAsync(b => b.Id == boardId);
         }
 
-        // --- EKSİK OLAN METODUN UYGULAMASINI EKLEDİK ---
+ 
         public async Task<Board> GetByIdAsync(int id)
         {
             return await _context.Boards.FindAsync(id);

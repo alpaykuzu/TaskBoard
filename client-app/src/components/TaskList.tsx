@@ -1,32 +1,35 @@
 import { useState } from "react";
-import type { TaskList as TaskListType, Task } from "../types/board";
-import type { UpdateTaskListData } from "../types/board";
-import type { UpdateTaskData } from "../types/task";
-import TaskCard from "./TaskCard";
-import AddCardForm from "./AddCardForm";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+import type {
+  TaskList as TaskListType,
+  Task,
+  UpdateTaskListData,
+} from "../types/board";
+import TaskCard from "./TaskCard";
+import AddCardForm from "./AddCardForm";
+
 type TaskListProps = {
   list: TaskListType;
-  boardId: number;
   onCardAdded: (newTask: Task, listId: number) => void;
   onTaskDeleted: (taskId: number, listId: number) => void;
-  onTaskUpdated: (updatedTask: Task, listId: number) => void;
+  onTaskUpdated: (updatedTask: Task) => void;
   onListDeleted: (listId: number) => void;
   onListUpdated: (listId: number, data: UpdateTaskListData) => void;
+  onOpenCardDetail: (card: Task) => void;
 };
 
 function TaskList({
   list,
   onCardAdded,
   onTaskDeleted,
-  onTaskUpdated,
   onListDeleted,
   onListUpdated,
+  onOpenCardDetail,
 }: TaskListProps) {
   const { setNodeRef } = useDroppable({ id: list.id });
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -81,9 +84,9 @@ function TaskList({
               key={card.id}
               task={card}
               onDelete={() => onTaskDeleted(card.id, list.id)}
-              onUpdate={(updateData: UpdateTaskData) =>
-                onTaskUpdated({ ...card, ...updateData }, list.id)
-              }
+              onEdit={() => onOpenCardDetail(card)}
+              // --- DÜZELTME: Hatalı onUpdate prop'u kaldırıldı. ---
+              // onUpdate={(updateData: UpdateCardData) => onTaskUpdated({ ...card, ...updateData })}
             />
           ))}
         </div>
