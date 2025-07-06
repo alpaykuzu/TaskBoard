@@ -5,7 +5,7 @@ TaskBoard is a clean, modular, and production-ready full-stack Kanban board appl
 
 ---
 
-## ✨ Features
+## ✨ Features 
 
 - 🔐 JWT-based Authentication (ASP.NET Identity)
 - 🗂️ Task and Board CRUD operations
