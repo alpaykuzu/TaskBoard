@@ -33,7 +33,6 @@ TaskBoard is a clean, modular, and production-ready full-stack Kanban board appl
 
 ## 🗂️ Project Structure
 
-```
 
 TaskBoard-main/
 ├── TaskBoard.API/           # ASP.NET Core API (Presentation)
