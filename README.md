@@ -1,7 +1,8 @@
 ```markdown
 # 📋 TaskBoard: Full Stack Kanban Task Management App
 
-TaskBoard is a clean, modular, and production-ready full-stack Kanban board application built using **ASP.NET Core 7.0** (with Clean Architecture principles) and a **React + TypeScript + Vite** frontend.
+TaskBoard is a clean, modular, and production-ready full-stack Kanban board application built
+ using ASP.NET Core 7.0 (with Clean Architecture principles) and a React + TypeScript + Vite frontend.
 
 ---
 
